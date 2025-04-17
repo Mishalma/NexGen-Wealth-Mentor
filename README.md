@@ -159,10 +159,6 @@ Access it at **[http://localhost:5000](http://localhost:5000)**
 
 ---
 
-## 🖼️ Screenshots  
-*(Add during deployment — 3D dashboards, AI chat, and goal planner visuals)*
-
----
 
 ## 🤝 Contributing
 
