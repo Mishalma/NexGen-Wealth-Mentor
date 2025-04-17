@@ -1,0 +1,13 @@
+flask
+pandas
+plotly
+python-dotenv
+pydantic
+werkzeug
+google-adk
+asyncio
+matplotlib
+numpy
+werkzeug
+Flask-Login
+SQLAlchemy

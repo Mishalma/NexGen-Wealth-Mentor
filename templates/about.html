@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-gray-900/80 backdrop-blur-lg rounded-xl p-8 shadow-neo animate-fade-in max-w-3xl mx-auto">
+    <h1 class="text-3xl font-bold mb-4 text-emerald-400 animate-glow">About AI Financial Mentor</h1>
+    <p class="text-gray-300 mb-6">A cutting-edge platform powered by AI to guide you to financial freedom.</p>
+    <ul class="list-disc pl-5 mb-6 text-gray-400">
+        <li class="mb-2"><strong>Budget Agent</strong>: Optimizes your spending.</li>
+        <li class="mb-2"><strong>Savings Agent</strong>: Builds your wealth.</li>
+        <li class="mb-2"><strong>Debt Agent</strong>: Accelerates debt payoff.</li>
+    </ul>
+    <h2 class="text-xl font-semibold mb-4 text-gray-100">Privacy & Security</h2>
+    <ul class="list-disc pl-5 mb-6 text-gray-400">
+        <li class="mb-2">End-to-end encrypted data.</li>
+        <li class="mb-2">Secure user authentication.</li>
+        <li class="mb-2">No data shared with third parties.</li>
+    </ul>
+</div>
+
+<script>
+gsap.from('.animate-fade-in', { opacity: 0, duration: 1, ease: 'power3.out' });
+gsap.from('li', { x: -30, opacity: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out' });
+</script>
+{% endblock %}

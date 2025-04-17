@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-white p-8 rounded-lg shadow-lg animate-fade-in">
+    <h1 class="text-3xl font-bold mb-4 text-blue-600">AI Financial Coach</h1>
+    <p class="text-gray-600 mb-6">Powered by Google's Agent Development Kit (ADK) and Gemini AI</p>
+    <form method="POST" action="{{ url_for('analyze') }}" enctype="multipart/form-data" id="finance-form">
+        <h2 class="text-2xl font-semibold mb-4">Enter Your Financial Information</h2>
+
+        <h3 class="text-xl font-medium mb-3">Income & Household</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="form-group">
+                <label for="monthly_income" class="block text-gray-700">Monthly Income (₹)</label>
+                <input type="number" name="monthly_income" step="1000" value="50000" required
+                       class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300">
+            </div>
+            <div class="form-group">
+                <label for="dependants" class="block text-gray-700">Number of Dependants</label>
+                <input type="number" name="dependants" step="1" value="0" required
+                       class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300">
+            </div>
+        </div>
+
+        <h3 class="text-xl font-medium mb-3">Expenses</h3>
+        <div class="mb-6">
+            <label class="block text-gray-700 mb-2">How would you like to enter your expenses?</label>
+            <div class="flex space-x-4">
+                <label class="flex items-center">
+                    <input type="radio" name="expense_option" value="csv" checked
+                           class="form-radio text-blue-600" onchange="toggleExpenseSection()">
+                    <span class="ml-2">Upload CSV Transactions</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="radio" name="expense_option" value="manual"
+                           class="form-radio text-blue-600" onchange="toggleExpenseSection()">
+                    <span class="ml-2">Enter Manually</span>
+                </label>
+            </div>
+        </div>
+
+        <div id="csv-upload" class="expense-section mb-6 animate-slide-in">
+            <label for="transaction_file" class="block text-gray-700">Upload Transaction CSV</label>
+            <input type="file" name="transaction_file" accept=".csv"
+                   class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300">
+            <p class="text-sm text-gray-500 mt-2">CSV should have columns: Date (YYYY-MM-DD), Category, Amount (₹)</p>
+        </div>
+
+        <div id="manual-expenses" class="expense-section mb-6 hidden animate-slide-in">
+            <h4 class="text-lg font-medium mb-3">Monthly Expenses by Category (₹)</h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {% for cat in ['Housing', 'Utilities', 'Food', 'Transportation', 'Healthcare', 'Entertainment', 'Personal', 'Savings', 'Other'] %}
+                <div class="form-group">
+                    <label for="manual_{{ cat }}" class="block text-gray-700">{{ cat }}</label>
+                    <input type="number" name="manual_{{ cat }}" step="500" value="0"
+                           class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <h3 class="text-xl font-medium mb-3">Debt Information</h3>
+        <div class="form-group mb-6">
+            <label for="num_debts" class="block text-gray-700">Number of Debts</label>
+            <input type="number" name="num_debts" id="num_debts" step="1" value="0" onchange="updateDebtFields()"
+                   class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300">
+        </div>
+        <div id="debt-fields" class="mb-6"></div>
+
+        <button type="submit" id="analyze-btn"
+                class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition duration-300">
+            Analyze My Finances
+        </button>
+    </form>
+</div>
+
+<script>
+function toggleExpenseSection() {
+    const csvSection = document.getElementById('csv-upload');
+    const manualSection = document.getElementById('manual-expenses');
+    const isCsv = document.querySelector('input[name="expense_option"]:checked').value === 'csv';
+    csvSection.classList.toggle('hidden', !isCsv);
+    manualSection.classList.toggle('hidden', isCsv);
+}
+
+function updateDebtFields() {
+    const numDebts = parseInt(document.getElementById('num_debts').value) || 0;
+    const debtFields = document.getElementById('debt-fields');
+    debtFields.innerHTML = '';
+    for (let i = 0; i < numDebts; i++) {
+        debtFields.innerHTML += `
+            <div class="border p-4 rounded-lg mb-4 animate-slide-in">
+                <h4 class="text-lg font-medium mb-3">Debt #${i+1}</h4>
+                <div class="form-group mb-2">
+                    <label class="block text-gray-700">Name</label>
+                    <input type="text" name="debt_name_${i}" value="Debt ${i+1}"
+                           class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300">
+                </div>
+                <div class="form-group mb-2">
+                    <label class="block text-gray-700">Amount (₹)</label>
+                    <input type="number" name="debt_amount_${i}" step="1000" value="10000"
+                           class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300">
+                </div>
+                <div class="form-group mb-2">
+                    <label class="block text-gray-700">Interest Rate (%)</label>
+                    <input type="number" name="debt_rate_${i}" step="0.1" value="5.0"
+                           class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300">
+                </div>
+                <div class="form-group">
+                    <label class="block text-gray-700">Minimum Payment (₹)</label>
+                    <input type="number" name="debt_min_payment_${i}" step="500" value="1000"
+                           class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 transition duration-300">
+                </div>
+            </div>
+        `;
+    }
+}
+
+// Show loading spinner on form submit
+document.getElementById('finance-form').addEventListener('submit', () => {
+    const btn = document.getElementById('analyze-btn');
+    btn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-3 inline" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg> Analyzing...';
+    btn.disabled = true;
+});
+</script>
+{% endblock %}

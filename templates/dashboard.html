@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="relative">
+    <h1 class="text-4xl font-bold mb-8 text-emerald-400 animate-glow">Financial Dashboard</h1>
+    <!-- 3D Finance Cubes -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="cube-container" data-category="budget">
+            <div class="cube bg-gray-900/80 backdrop-blur-lg">
+                <div class="cube-face front p-4">
+                    <h2 class="text-xl font-semibold text-emerald-400">Budget</h2>
+                    <p class="text-gray-300">Income: ₹50,000</p>
+                    <p class="text-gray-300">Expenses: ₹40,000</p>
+                </div>
+            </div>
+        </div>
+        <div class="cube-container" data-category="savings">
+            <div class="cube bg-gray-900/80 backdrop-blur-lg">
+                <div class="cube-face front p-4">
+                    <h2 class="text-xl font-semibold text-emerald-400">Savings</h2>
+                    <p class="text-gray-300">Emergency Fund: ₹30,000</p>
+                </div>
+            </div>
+        </div>
+        <div class="cube-container" data-category="investments">
+            <div class="cube bg-gray-900/80 backdrop-blur-lg">
+                <div class="cube-face front p-4">
+                    <h2 class="text-xl font-semibold text-emerald-400">Investments</h2>
+                    <p class="text-gray-300">Portfolio: ₹1,50,000</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hologram Orb Guide -->
+    <div id="hologram-orb" class="absolute bottom-4 right-4 w-16 h-16 rounded-full bg-emerald-500/50 animate-pulse"></div>
+    <!-- Real-Time Insights -->
+    <div class="mt-8 bg-gray-900/80 backdrop-blur-lg rounded-xl p-6 animate-slide-in">
+        <h2 class="text-xl font-semibold text-emerald-400 mb-4">Real-Time Insights</h2>
+        <p id="insight-text" class="text-gray-300">Analyzing your financial patterns...</p>
+        <button class="mt-4 bg-violet-600 text-white px-4 py-2 rounded-lg hover:bg-violet-700 transition-colors duration-300" onclick="updateInsight()">Refresh</button>
+    </div>
+</div>
+
+<script>
+// Plotly Chart (Radial)
+Plotly.newPlot('radial-chart', [{
+    type: 'scatterpolar',
+    r: [20000, 5000, 2000, 13000],
+    theta: ['Housing', 'Food', 'Transport', 'Others'],
+    fill: 'toself',
+    marker: { color: '#10B981' }
+}], { title: { text: 'Spending Overview', font: { color: '#D1D5DB' } }, polar: { radialaxis: { visible: true } }, paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)' }, { animation: { duration: 1000 } });
+
+// GSAP Parallax
+gsap.from('.cube-container', { y: 100, opacity: 0, duration: 1, stagger: 0.2, ease: 'power3.out' });
+</script>
+{% endblock %}

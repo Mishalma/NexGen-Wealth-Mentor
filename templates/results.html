@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-gray-900/80 backdrop-blur-lg rounded-xl p-8 shadow-neo animate-fade-in">
+    <h1 class="text-3xl font-bold mb-6 text-emerald-400 animate-glow">Financial Analysis Results</h1>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Budget Analysis -->
+        {% if results.budget_analysis %}
+            <div class="bg-gray-800/80 backdrop-blur-lg rounded-xl p-6 animate-slide-in shadow-neo">
+                <h2 class="text-xl font-semibold mb-4 text-gray-100">Budget Analysis</h2>
+                <div class="mb-6">
+                    <h3 class="text-lg font-medium mb-3 text-gray-300">Spending Overview</h3>
+                    <div id="spending-radial" class="h-80"></div>
+                </div>
+                <div class="mb-6">
+                    <h3 class="text-lg font-medium mb-3 text-gray-300">Income vs. Expenses</h3>
+                    <div id="income-expenses-bar" class="h-80"></div>
+                    <p class="text-lg mt-4 text-gray-300"><strong>Surplus/Deficit:</strong> ₹{{ '%0.2f' % (results.budget_analysis.monthly_income - results.budget_analysis.total_expenses) }}</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium mb-3 text-gray-300">Recommendations</h3>
+                    <ul class="list-disc pl-5 text-gray-400">
+                        {% for rec in results.budget_analysis.recommendations %}
+                            <li class="mb-2 smart-card" data-status="{% if rec.potential_savings > 10000 %}warning{% else %}normal{% endif %}">
+                                <strong>{{ rec.category }}:</strong> {{ rec.recommendation }}
+                                {% if rec.potential_savings %} (Savings: ₹{{ '%0.2f' % rec.potential_savings }}) {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% else %}
+            <p class="text-gray-400">No budget analysis available.</p>
+        {% endif %}
+
+        <!-- Savings Strategy -->
+        {% if results.savings_strategy %}
+            <div class="bg-gray-800/80 backdrop-blur-lg rounded-xl p-6 animate-slide-in shadow-neo">
+                <h2 class="text-xl font-semibold mb-4 text-gray-100">Savings Strategy</h2>
+                <div class="mb-6">
+                    <h3 class="text-lg font-medium mb-3 text-gray-300">Emergency Fund</h3>
+                    <p class="text-gray-400"><strong>Recommended:</strong> ₹{{ '%0.2f' % results.savings_strategy.emergency_fund.recommended_amount }}</p>
+                    <p class="text-gray-400"><strong>Status:</strong> {{ results.savings_strategy.emergency_fund.current_status }}</p>
+                    {% if results.savings_strategy.emergency_fund.current_amount %}
+                        <div class="w-full bg-gray-700 rounded-full h-4 mt-4">
+                            <div class="bg-emerald-500 h-4 rounded-full animate-pulse" style="width: {{ (results.savings_strategy.emergency_fund.current_amount / results.savings_strategy.emergency_fund.recommended_amount * 100) | min(100) }}%"></div>
+                        </div>
+                        <p class="text-gray-400 mt-2">₹{{ '%0.2f' % results.savings_strategy.emergency_fund.current_amount }} / ₹{{ '%0.2f' % results.savings_strategy.emergency_fund.recommended_amount }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium mb-3 text-gray-300">Savings Allocations</h3>
+                    <ul class="list-disc pl-5 text-gray-400">
+                        {% for rec in results.savings_strategy.recommendations %}
+                            <li class="mb-2 smart-card" data-status="normal"><strong>{{ rec.category }}:</strong> ₹{{ '%0.2f' % rec.amount }}/month - {{ rec.rationale }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% else %}
+            <p class="text-gray-400">No savings strategy available.</p>
+        {% endif %}
+
+        <!-- Debt Reduction -->
+        {% if results.debt_reduction %}
+            <div class="bg-gray-800/80 backdrop-blur-lg rounded-xl p-6 animate-slide-in shadow-neo lg:col-span-2">
+                <h2 class="text-xl font-semibold mb-4 text-gray-100">Debt Reduction Plan</h2>
+                <p class="text-lg mb-4 text-gray-300"><strong>Total Debt:</strong> ₹{{ '%0.2f' % results.debt_reduction.total_debt }}</p>
+                <div class="mb-6">
+                    <h3 class="text-lg font-medium mb-3 text-gray-300">Debt Breakdown</h3>
+                    <div id="debt-radial" class="h-80"></div>
+                </div>
+                <div class="mb-6">
+                    <h3 class="text-lg font-medium mb-3 text-gray-300">Payoff Plans</h3>
+                    <div id="payoff-comparison" class="h-80"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <h4 class="text-lg font-medium mb-3 text-gray-300">Avalanche Method</h4>
+                            <p class="text-gray-400">Interest: ₹{{ '%0.2f' % results.debt_reduction.payoff_plans.avalanche.total_interest }}</p>
+                            <p class="text-gray-400">Time: {{ results.debt_reduction.payoff_plans.avalanche.months_to_payoff }} months</p>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-medium mb-3 text-gray-300">Snowball Method</h4>
+                            <p class="text-gray-400">Interest: ₹{{ '%0.2f' % results.debt_reduction.payoff_plans.snowball.total_interest }}</p>
+                            <p class="text-gray-400">Time: {{ results.debt_reduction.payoff_plans.snowball.months_to_payoff }} months</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <p class="text-gray-400">No debt reduction plan available.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// Radial Spending Chart
+Plotly.newPlot('spending-radial', [{
+    type: 'scatterpolar',
+    r: {{ results.budget_analysis.spending_categories | map(attribute='amount') | list | tojson }},
+    theta: {{ results.budget_analysis.spending_categories | map(attribute='category') | list | tojson }},
+    fill: 'toself',
+    marker: { color: '#10B981' }
+}], { title: { text: 'Spending Breakdown', font: { color: '#D1D5DB' } }, polar: { radialaxis: { visible: true } }, paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)' }, { animation: { duration: 1000 } });
+
+// Income vs. Expenses Bar Chart
+Plotly.newPlot('income-expenses-bar', [{
+    type: 'bar',
+    x: ['Income', 'Expenses'],
+    y: [{{ results.budget_analysis.monthly_income }}, {{ results.budget_analysis.total_expenses }}],
+    marker: { color: ['#10B981', '#EF4444'] }
+}], { title: { text: 'Income vs. Expenses', font: { color: '#D1D5DB' } }, paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)' }, { animation: { duration: 1000 } });
+
+// Radial Debt Chart
+Plotly.newPlot('debt-radial', [{
+    type: 'scatterpolar',
+    r: {{ results.debt_reduction.debts | map(attribute='amount') | list | tojson }},
+    theta: {{ results.debt_reduction.debts | map(attribute='name') | list | tojson }},
+    fill: 'toself',
+    marker: { color: '#6B21A8' }
+}], { title: { text: 'Debt Breakdown', font: { color: '#D1D5DB' } }, polar: { radialaxis: { visible: true } }, paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)' }, { animation: { duration: 1000 } });
+
+// Payoff Comparison
+Plotly.newPlot('payoff-comparison', [
+    {
+        type: 'bar',
+        name: 'Interest (₹)',
+        x: ['Avalanche', 'Snowball'],
+        y: [{{ results.debt_reduction.payoff_plans.avalanche.total_interest }}, {{ results.debt_reduction.payoff_plans.snowball.total_interest }}]
+    },
+    {
+        type: 'bar',
+        name: 'Months',
+        x: ['Avalanche', 'Snowball'],
+        y: [{{ results.debt_reduction.payoff_plans.avalanche.months_to_payoff }}, {{ results.debt_reduction.payoff_plans.snowball.months_to_payoff }}]
+    }
+], { title: { text: 'Payoff Comparison', font: { color: '#D1D5DB' } }, barmode: 'group', paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)' }, { animation: { duration: 1000 } });
+
+gsap.from('.animate-fade-in', { opacity: 0, duration: 1, ease: 'power3.out' });
+gsap.from('.animate-slide-in', { y: 50, opacity: 0, duration: 0.8, stagger: 0.2, ease: 'power3.out' });
+</script>
+{% endblock %}

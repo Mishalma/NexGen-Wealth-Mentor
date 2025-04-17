@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-gray-900/80 backdrop-blur-lg rounded-xl p-8 shadow-neo animate-fade-in max-w-3xl mx-auto relative">
+    <h1 class="text-3xl font-bold mb-4 text-emerald-400 animate-glow">Chat with AI Mentor</h1>
+    <p class="text-gray-300 mb-6">Ask questions and get personalized advice.</p>
+    <div class="bg-gray-800/80 rounded-lg p-4 h-96 overflow-y-auto mb-4" id="chat-box">
+        <div class="chat-bubble ai-bubble">AI Mentor: How can I assist you today?</div>
+    </div>
+    <div class="flex space-x-2">
+        <input type="text" id="chat-input" placeholder="Type or speak your question..."
+               class="flex-1 p-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:ring-2 focus:ring-emerald-500 transition duration-300 shadow-neo">
+        <button onclick="sendMessage()" class="bg-emerald-500 text-white px-4 py-3 rounded-lg hover:bg-emerald-600 transition-all duration-300 shadow-neo">Send</button>
+    </div>
+    <div id="hologram-orb" class="absolute bottom-4 right-4 w-12 h-12 rounded-full bg-emerald-500/50 animate-pulse"></div>
+</div>
+
+<script>
+function sendMessage() {
+    const input = document.getElementById('chat-input');
+    const chatBox = document.getElementById('chat-box');
+    if (input.value.trim()) {
+        const userBubble = document.createElement('div');
+        userBubble.className = 'chat-bubble user-bubble';
+        userBubble.textContent = `You: ${input.value}`;
+        chatBox.appendChild(userBubble);
+
+        const aiBubble = document.createElement('div');
+        aiBubble.className = 'chat-bubble ai-bubble';
+        aiBubble.textContent = `AI Mentor: Analyzing... (Example: Save 15% for retirement.)`;
+        chatBox.appendChild(aiBubble);
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+        input.value = '';
+
+        gsap.from(aiBubble, { opacity: 0, y: 20, duration: 0.8, ease: 'power3.out' });
+        gsap.to('#hologram-orb', { scale: 1.2, duration: 0.3, yoyo: true, repeat: 1 });
+    }
+}
+
+document.getElementById('chat-input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessage();
+});
+
+gsap.from('.animate-fade-in', { opacity: 0, duration: 1, ease: 'power3.out' });
+</script>
+{% endblock %}

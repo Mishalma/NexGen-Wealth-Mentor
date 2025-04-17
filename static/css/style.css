@@ -1,0 +1,141 @@
+/* Animation keyframes */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.8); }
+    100% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+}
+
+@keyframes spinCube {
+    0% { transform: rotateX(0deg) rotateY(0deg); }
+    100% { transform: rotateX(360deg) rotateY(360deg); }
+}
+
+/* Animation classes */
+.animate-fade-in {
+    animation: fadeIn 1s ease-out;
+}
+
+.animate-slide-in {
+    animation: slideIn 0.8s ease-out;
+}
+
+.animate-pulse {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-glow {
+    animation: glow 3s ease-in-out infinite;
+}
+
+/* Neo-morph shadow */
+.shadow-neo {
+    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.4), -8px -8px 16px rgba(55, 65, 81, 0.2);
+}
+
+/* Glassmorphism */
+.bg-gray-900\/80 {
+    background: rgba(17, 24, 39, 0.8);
+    backdrop-filter: blur(12px);
+}
+
+.bg-gray-800\/80 {
+    background: rgba(31, 41, 55, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+/* 3D Cube */
+.cube-container {
+    perspective: 1000px;
+}
+
+.cube {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease;
+}
+
+.cube-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+}
+
+.cube-face.front {
+    transform: translateZ(100px);
+}
+
+/* Smart Card */
+.smart-card[data-status="warning"] {
+    border-left: 4px solid #EF4444;
+    transition: border-color 0.3s ease;
+}
+
+/* Chat Bubbles */
+.chat-bubble {
+    margin: 8px;
+    padding: 12px 16px;
+    border-radius: 16px;
+    max-width: 80%;
+}
+
+.ai-bubble {
+    background: #6B21A8;
+    color: #D1D5DB;
+}
+
+.user-bubble {
+    background: #10B981;
+    color: #111827;
+    margin-left: auto;
+}
+
+/* General styles */
+body {
+    background: #111827;
+}
+
+button:hover, a:hover {
+    transform: translateY(-2px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus, select:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+}
+
+.plotly-graph-div {
+    transition: opacity 0.8s ease-in;
+}
+
+#chat-box::-webkit-scrollbar {
+    width: 8px;
+}
+
+#chat-box::-webkit-scrollbar-track {
+    background: #374151;
+}
+
+#chat-box::-webkit-scrollbar-thumb {
+    background: #10B981;
+    border-radius: 4px;
+}

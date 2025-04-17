@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-gray-900/80 backdrop-blur-lg rounded-xl p-8 shadow-neo animate-fade-in max-w-md mx-auto">
+    <h1 class="text-3xl font-bold mb-4 text-emerald-400 animate-glow">Login</h1>
+    <p class="text-gray-300 mb-6">Access your financial dashboard.</p>
+    <form method="POST" action="{{ url_for('login') }}">
+        <div class="form-group mb-4">
+            <label for="username" class="block text-gray-300">Username</label>
+            <input type="text" name="username" required
+                   class="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:ring-2 focus:ring-emerald-500 transition duration-300 shadow-neo">
+        </div>
+        <div class="form-group mb-6">
+            <label for="password" class="block text-gray-300">Password</label>
+            <input type="password" name="password" required
+                   class="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:ring-2 focus:ring-emerald-500 transition duration-300 shadow-neo">
+        </div>
+        <button type="submit" class="w-full bg-emerald-500 text-white p-3 rounded-lg hover:bg-emerald-600 transition-all duration-300 shadow-neo animate-glow">Login</button>
+    </form>
+    <p class="text-gray-400 mt-4">Don't have an account? <a href="{{ url_for('register') }}" class="text-emerald-400 hover:text-emerald-300">Register</a></p>
+</div>
+
+<script>
+gsap.from('.animate-fade-in', { opacity: 0, duration: 1, ease: 'power3.out' });
+gsap.from('.form-group', { y: 30, opacity: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out' });
+</script>
+{% endblock %}

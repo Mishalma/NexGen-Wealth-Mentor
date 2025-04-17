@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-gray-900/80 backdrop-blur-lg rounded-xl p-8 shadow-neo animate-fade-in">
+    <h1 class="text-3xl font-bold mb-6 text-emerald-400 animate-glow">Financial Goals</h1>
+    <p class="text-gray-300 mb-6">Drag goals to your monthly plan.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Goals List -->
+        <div class="bg-gray-800/80 rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-100">Available Goals</h2>
+            <div id="goals-list" class="space-y-4">
+                <div class="goal-card draggable bg-gray-700/80 p-4 rounded-lg shadow-neo" draggable="true" data-goal="emergency">
+                    <h3 class="text-lg font-medium text-emerald-400">Emergency Fund</h3>
+                    <p class="text-gray-400">₹1,20,000</p>
+                </div>
+                <div class="goal-card draggable bg-gray-700/80 p-4 rounded-lg shadow-neo" draggable="true" data-goal="debt">
+                    <h3 class="text-lg font-medium text-emerald-400">Debt Payoff</h3>
+                    <p class="text-gray-400">₹50,000</p>
+                </div>
+            </div>
+        </div>
+        <!-- Monthly Plan -->
+        <div class="bg-gray-800/80 rounded-lg p-6 dropzone" id="monthly-plan">
+            <h2 class="text-xl font-semibold mb-4 text-gray-100">Monthly Plan</h2>
+            <div class="space-y-4"></div>
+        </div>
+    </div>
+    <!-- Progress Timeline -->
+    <div class="mt-8">
+        <h2 class="text-xl font-semibold mb-4 text-gray-100">Progress Timeline</h2>
+        <div id="progress-timeline" class="h-80"></div>
+    </div>
+</div>
+
+<script>
+// Drag-and-Drop with Interact.js
+interact('.draggable').draggable({
+    listeners: {
+        move: function(event) {
+            const target = event.target;
+            const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+            const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+            target.style.transform = `translate(${x}px, ${y}px)`;
+            target.setAttribute('data-x', x);
+            target.setAttribute('data-y', y);
+        }
+    }
+});
+
+interact('.dropzone').dropzone({
+    accept: '.draggable',
+    ondrop: function(event) {
+        const draggable = event.relatedTarget;
+        const dropzone = event.target.querySelector('.space-y-4');
+        dropzone.appendChild(draggable);
+        draggable.style.transform = 'translate(0, 0)';
+        draggable.setAttribute('data-x', 0);
+        draggable.setAttribute('data-y', 0);
+        gsap.to(draggable, { scale: 1.1, duration: 0.3, yoyo: true, repeat: 1 });
+    }
+});
+
+// Plotly Timeline (Simulated)
+Plotly.newPlot('progress-timeline', [{
+    type: 'scatter',
+    x: ['2025-04', '2025-06', '2025-08', '2025-10'],
+    y: [30000, 60000, 90000, 120000],
+    mode: 'lines+markers',
+    line: { shape: 'spline', color: '#10B981' }
+}], { title: { text: 'Savings Progress', font: { color: '#D1D5DB' } }, paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)' }, { animation: { duration: 1000 } });
+
+gsap.from('.animate-fade-in', { opacity: 0, duration: 1, ease: 'power3.out' });
+gsap.from('.goal-card', { y: 50, opacity: 0, duration: 0.8, stagger: 0.2, ease: 'power3.out' });
+</script>
+{% endblock %}
